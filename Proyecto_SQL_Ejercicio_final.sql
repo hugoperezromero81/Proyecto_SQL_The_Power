@@ -25,6 +25,13 @@ SELECT LANGUAGE_ID AS "Idioma", ORIGINAL_LANGUAGE_ID AS "Idioma Original"
 FROM film
 WHERE LANGUAGE_ID = ORIGINAL_LANGUAGE_ID ;
 
+--ejercicio corregido--
+
+SELECT TITLE AS "Título", LANGUAGE_ID AS "Idioma", ORIGINAL_LANGUAGE_ID AS "Idioma Original"
+FROM film
+WHERE LANGUAGE_ID = ORIGINAL_LANGUAGE_ID;
+
+
 --5. Ordena las películas por duración de forma ascendente.--
 
 SELECT TITLE AS "Nombre de Peli", LENGTH AS "Duración"
@@ -43,6 +50,14 @@ SELECT SPECIAL_FEATURES AS "Clasificación",COUNT (SPECIAL_FEATURES) AS "Recuent
 FROM FILM AS F 
 GROUP BY "Clasificación"
 ORDER BY "Recuento" ASC;
+
+--ejercicio corregido--
+
+SELECT rating AS "Clasificación", COUNT(*) AS "Recuento"
+FROM film
+GROUP BY rating
+ORDER BY "Recuento" ASC;
+
 
 --8. Encuentra el título de todas las películas que son ‘PG-13’ o tienen una duración mayor a 3 horas en la tabla film.--
 
@@ -67,6 +82,16 @@ SELECT RENTAL_RATE "Coste de alquiler", RENTAL_DURATION AS "Duración del alquil
 FROM FILM AS F  
 ORDER BY "Duración del alquiler" DESC
 OFFSET 2 LIMIT 1;
+
+
+--ejercicio corregido--
+
+SELECT p.amount AS "Coste de alquiler"
+FROM rental r
+JOIN payment p ON r.rental_id = p.rental_id
+ORDER BY r.rental_date DESC
+OFFSET 2 LIMIT 1;
+
 
 --12. Encuentra el título de las películas en la tabla “film” que no sean ni ‘NC-17’ ni ‘G’ en cuanto a su clasificación.--
 
@@ -132,6 +157,17 @@ WHERE F.LENGTH > 110
 GROUP BY C."name"
 ORDER BY "Duración promedio" desc;
 
+--ejercicio corregido--
+
+SELECT c.name AS "Categoría", AVG(f.length) AS "Duración promedio"
+FROM film f
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+GROUP BY c.name
+HAVING AVG(f.length) > 110
+ORDER BY "Duración promedio"  DESC;
+
+
 --21. ¿Cuál es la media de duración del alquiler de las películas?--
 
 SELECT Round(AVG(RENTAL_DURATION),2) AS "Duración media de alquiler" 
@@ -149,6 +185,16 @@ SELECT RENTAL_DATE AS "Fecha de alquiler", count(RENTAL_DATE ) AS "Número de al
 FROM RENTAL AS R 
 GROUP BY "Fecha de alquiler" 
 ORDER BY "Número de alquileres" DESC;
+
+--ejercicio corregido--
+
+SELECT 
+    DATE(rental_date) AS "fecha", 
+    COUNT(*) AS "total_alquileres"
+FROM rental
+GROUP BY "fecha"
+ORDER BY "total_alquileres" DESC;
+
 
 --24. Encuentra las películas con una duración superior al promedio.--
 
@@ -195,6 +241,14 @@ FROM FILM AS F
 INNER JOIN INVENTORY AS I ON I.FILM_ID = F.FILM_ID
 GROUP by"Nombre de Pelis"
 ORDER BY INVENTARIO DES;
+
+--ejercicio corregido--
+
+SELECT TITLE AS "Nombre de Pelis", COUNT(STORE_ID ) AS "inventario"
+FROM FILM AS F 
+INNER JOIN INVENTORY AS I ON I.FILM_ID = F.FILM_ID
+GROUP by"Nombre de Pelis"
+ORDER BY INVENTARIO DESC;
 
 -- 30. Obtener los actores y el número de películas en las que ha actuado.--
 
@@ -449,6 +503,18 @@ INNER JOIN film_category fc ON ANP."Pelis actuando" = fc.film_id
 INNER JOIN category c ON fc.category_id = c.category_id
 WHERE c.name = 'Sci-Fi'
 ORDER BY ANP."Nombre del actor/actriz" asc;
+
+--ejercicio corregido--
+
+SELECT DISTINCT a.first_name, a.last_name
+FROM actor a
+JOIN film_actor fa ON a.actor_id = fa.actor_id
+JOIN film f ON fa.film_id = f.film_id
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+WHERE c.name = 'Sci-Fi'
+ORDER BY a.last_name, a.first_name;
+
 
 /*--55. Encuentra el nombre y apellido de los actores que han actuado en
 películas que se alquilaron después de que la película ‘Spartacus
